@@ -32,13 +32,102 @@ function playerTurn() {
 function computersTurn() {
     var taken = false;
     while (taken === false && move != 5) {
-        var id = (Math.random() * 9).toFixed();
+        var id = chooseCell();
         var cell = document.getElementById(id);
         if (cell != null && cell.innerHTML == "") {
             taken = true;
             cells[id] = turn
             writeCell(turn, cell);
         }
+    }
+}
+
+function chooseCell() {
+    if (mode == "automatic_easy") {
+        return (Math.random() * 9).toFixed();
+    } else {
+        var choice = tryToWin('O');
+        if (choice != -1) {
+            return choice;
+        } else {
+            choice = tryToWin('X');
+            if (choice != -1) {
+                return choice;
+            } else {
+                return (Math.random() * 9).toFixed();
+            }
+        }
+    }
+}
+
+function tryToWin(value) {
+    //Primera fila
+    if (cells[0] == value && cells[1] == value && cells[2] == '') {
+        return 2;
+    } else if (cells[0] == value && cells[2] == value && cells[1] == '') {
+        return 1;
+    } else if (cells[1] == value && cells[2] == value && cells[0] == '') {
+        return 0;
+    }
+    //Segunda fila
+    else if (cells[3] == value && cells[4] == value && cells[5] == '') {
+        return 5;
+    } else if (cells[3] == value && cells[5] == value && cells[4] == '') {
+        return 4;
+    } else if (cells[4] == value && cells[5] == value && cells[3] == '') {
+        return 3;
+    }
+    //Tercera fila
+    else if (cells[6] == value && cells[7] == value && cells[8] == '') {
+        return 8;
+    } else if (cells[6] == value && cells[8] == value && cells[7] == '') {
+        return 7;
+    } else if (cells[7] == value && cells[8] == value && cells[6] == '') {
+        return 6;
+    }
+    //Primera columna
+    else if (cells[0] == value && cells[3] == value && cells[6] == '') {
+        return 6;
+    } else if (cells[0] == value && cells[6] == value && cells[3] == '') {
+        return 3;
+    } else if (cells[3] == value && cells[6] == value && cells[0] == '') {
+        return 0;
+    }
+    //Segunda columna
+    else if (cells[1] == value && cells[4] == value && cells[7] == '') {
+        return 7;
+    } else if (cells[1] == value && cells[7] == value && cells[4] == '') {
+        return 4;
+    } else if (cells[4] == value && cells[7] == value && cells[1] == '') {
+        return 1;
+    }
+    //Tercera columna
+    else if (cells[2] == value && cells[5] == value && cells[8] == '') {
+        return 8;
+    } else if (cells[2] == value && cells[8] == value && cells[5] == '') {
+        return 5;
+    } else if (cells[5] == value && cells[8] == value && cells[2] == '') {
+        return 2;
+    }
+    //Primera diagonal
+    else if (cells[0] == value && cells[4] == value && cells[8] == '') {
+        return 8;
+    } else if (cells[0] == value && cells[8] == value && cells[4] == '') {
+        return 4;
+    } else if (cells[4] == value && cells[8] == value && cells[0] == '') {
+        return 0;
+    }
+    //Segunda diagonal
+    else if (cells[2] == value && cells[4] == value && cells[6] == '') {
+        return 6;
+    } else if (cells[2] == value && cells[6] == value && cells[4] == '') {
+        return 4;
+    } else if (cells[4] == value && cells[6] == value && cells[2] == '') {
+        return 2;
+    }
+    //Otro
+    else {
+        return -1;
     }
 }
 
