@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="description" content="Tres en raya">
+    <link rel="stylesheet" href="style.css">
+    <script src="javascript.js" defer></script>
+    <title>Tres en raya</title>
+</head>
+
+<body>
+    <header>
+        <div>
+            <input type="radio" id="manual" name="mode" value="playerVSplayer" onclick="createBoard()">
+            <label for="manual">Jugador vs Jugador</label>
+
+            <input type="radio" id="automatic_easy" name="mode" value="playerVSmachine-easy" onclick="createBoard()" checked>
+            <label for="automatic_easy">Jugador vs Máquina (Fácil)</label>
+        </div>
+        <div id="main_text">Iniciar partida</div>
+    </header>
+    <section>
+        <div id="table_div"></div>
+    </section>
+
+    <footer>
+        <div>
+            <button name="restart_game" type="button" onclick="createBoard()">Reiniciar partida</button>
+        </div>
+    </footer>
+
+</body>
+
+</html>
