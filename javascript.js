@@ -50,11 +50,15 @@ function chooseCell() {
         if (choice != -1) {
             return choice;
         } else {
-            choice = tryToWin('X');
-            if (choice != -1) {
-                return choice;
+            if (mode == "automatic_medium") {
+                choice = tryToWin('X');
+                if (choice != -1) {
+                    return choice;
+                } else {
+                    return (Math.random() * 9).toFixed();
+                }
             } else {
-                return (Math.random() * 9).toFixed();
+                return studyMove();
             }
         }
     }
@@ -129,6 +133,98 @@ function tryToWin(value) {
     else {
         return -1;
     }
+}
+
+function studyMove() {
+    //Si podemos, evitamos la victoria del jugador
+    var choice = tryToWin('X');
+    if (choice != -1) {
+        return choice;
+    } else {
+        switch (move) {
+            //Primer turno
+            case 1:
+                if (cells[0] == 'X' || cells[2] == 'X' || cells[6] == 'X' || cells[8] == 'X') {
+                    return 4;
+                } else if (cells[4] == 'X') {
+                    return 0;
+                } else if (cells[1] == 'X') {
+                    return 2;
+                } else if (cells[3] == 'X') {
+                    return 6;
+                } else {
+                    return 8;
+                }
+            //Segundo turno: solo debemos comprobar las opciones que no se hayan descartado anteriormente con la función tryToWin
+            case 2:
+                if (cells[0] == 'X' && cells[4] == 'O') {
+                    if (cells[5] == 'X') {
+                        return 1;
+                    } else {
+                        return 5;
+                    }
+                } else if (cells[1] == 'X' && cells[2] == 'O') {
+                    if (cells[0] == 'X' || cells[3] == 'X') {
+                        return 8;
+                    } else if (cells[5] == 'X') {
+                        return 4;
+                    } else {
+                        return 7;
+                    }
+                } else if (cells[2] == 'X' && cells[4] == 'O') {
+                    if (cells[3] == 'X') {
+                        return 1;
+                    } else {
+                        return 3;
+                    }
+                } else if (cells[3] == 'X' && cells[6] == 'O') {
+                    if (cells[0] == 'X' || cells[1] == 'X') {
+                        return 8;
+                    } else if (cells[8] == 'X') {
+                        return 5;
+                    } else {
+                        return 4;
+                    }
+                } else if (cells[4] == 'X' && cells[0] == 'O') {
+                    return 6;
+                } else if (cells[5] == 'X' && cells[8] == 'O') {
+                    if (cells[0] == 'X' || cells[7] == 'X') {
+                        return 4;
+                    } else if (cells[6] == 'X') {
+                        return 3;
+                    } else {
+                        return 6;
+                    }
+                } else if (cells[6] == 'X' && cells[4] == 'O') {
+                    if (cells[5] == 'X') {
+                        return 7;
+                    } else {
+                        return 3;
+                    }
+                } else if (cells[7] == 'X' && cells[8] == 'O') {
+                    if (cells[3] == 'X' || cells[6] == 'X') {
+                        return 2;
+                    } else if (cells[2] == 'X') {
+                        return 1;
+                    } else {
+                        return 4;
+                    }
+                } else if (cells[8] == 'X' && cells[4] == 'O') {
+                    if (cells[0] == 'X') {
+                        return 5;
+                    } else if (cells[1] == 'X') {
+                        return 0;
+                    } else {
+                        return 7;
+                    }
+                } else {
+                    return (Math.random() * 9).toFixed();
+                }
+            default:
+                return (Math.random() * 9).toFixed();
+        }
+    }
+
 }
 
 function writeCell(value, cell) {
