@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Tres en raya">
     <link rel="stylesheet" href="style.css">
     <script src="javascript.js" defer></script>
@@ -15,13 +16,18 @@
             <input type="radio" id="manual" name="mode" value="playerVSplayer" onclick="createBoard()">
             <label for="manual">Jugador vs Jugador</label>
 
-            <input type="radio" id="automatic_easy" name="mode" value="playerVSmachine-easy" onclick="createBoard()" checked>
+            <input type="radio" id="automatic_easy" name="mode" value="playerVSmachine-easy" onclick="createBoard()"
+                checked>
             <label for="automatic_easy">Jugador vs Máquina (Fácil)</label>
 
-            <input type="radio" id="automatic_medium" name="mode" value="playerVSmachine-medium" onclick="createBoard()" checked>
+            <div class="breaker"></div>
+
+            <input type="radio" id="automatic_medium" name="mode" value="playerVSmachine-medium" onclick="createBoard()"
+                checked>
             <label for="automatic_medium">Jugador vs Máquina (Medio)</label>
 
-            <input type="radio" id="automatic_impossible" name="mode" value="playerVSmachine-imposibol" onclick="createBoard()">
+            <input type="radio" id="automatic_impossible" name="mode" value="playerVSmachine-imposibol"
+                onclick="createBoard()">
             <label for="automatic_impossible">Jugador vs Máquina (Imposible)</label>
         </div>
         <div id="main_text">Iniciar partida</div>

@@ -1,3 +1,15 @@
+@media (max-width: 899px) {
+    .breaker {
+        display: block;
+    }
+}
+
+@media (min-width: 900px) {
+    .breaker {
+        display: none;
+    }
+}
+
 div {
     text-align: center;
     margin: 20px 0;
