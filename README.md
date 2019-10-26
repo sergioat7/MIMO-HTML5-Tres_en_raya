@@ -24,4 +24,4 @@ TIC-TAC-TOE game
 	2. Medium: the machine tries to avoid the player's victory and tries to win, but if it cannot, it chooses randomly its next move.
 	2. Difficult: the machine calculates the best movement in order to avoid player's victory and guarantee its own.
 
-![Alt text](C:\Usuarios\Sergio\Escritorio\image.png "Title")
+![Alt text](./images/image.png "Title")
