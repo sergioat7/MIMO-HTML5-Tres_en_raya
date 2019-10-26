@@ -1,5 +1,4 @@
 # MIMO-HTML5-Tres_en_raya
-Juego del Tres en raya
 
 TIC-TAC-TOE game
 
@@ -20,6 +19,7 @@ TIC-TAC-TOE game
 	2. Three vertical lines.
 	3. Two diagonals.
 
-- There are 2 game difficulties:
+- There are 3 game difficulties in automatic mode:
 	1. Easy: the machine randomly chooses its next move.
-	2. Difficult: the machine calculates the best movement.
+	2. Medium: the machine tries to avoid the player's victory and tries to win, but if it cannot, it chooses randomly its next move.
+	2. Difficult: the machine calculates the best movement in order to avoid player's victory and guarantee its own.
