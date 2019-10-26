@@ -52,7 +52,7 @@ class Game {
         this.turn = JUGADOR_X;
         this.gameFinished = false;
         this.move = 0;
-        document.getElementById('main_text').innerHTML = "Iniciar partida";
+        this.writeInMainText("Iniciar partida");
         this.getModeSelected();
         this.board = new Board(n);
     }
@@ -84,7 +84,7 @@ class Game {
     }
 
     writeInMainText(text) {
-        document.getElementById('main_text').innerHTML = text;
+        document.getElementById('title').innerHTML = text;
     }
 
     computersTurn() {

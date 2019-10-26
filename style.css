@@ -78,6 +78,10 @@ label {
     cursor: pointer;
 }
 
+#title {
+    text-align: center;
+    margin: 20px 0;
+}
 table {
     margin: 50px auto;
     position: relative;
