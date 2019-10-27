@@ -1,6 +1,6 @@
 //MARK: Global variables
-const JUGADOR_X = "X";
-const JUGADOR_O = "O";
+const X = "X";
+const O = "O";
 const EMPTY_CELL = "";
 const X_IMAGE = "./images/X_symbol.png";
 const O_IMAGE = "./images/O_symbol.png";
@@ -13,9 +13,9 @@ const MEDIUM_MODE = "automatic_medium";
 class Board {
 
     constructor(n) {
-        this.cells = Array(9).fill(EMPTY_CELL);
+        this.cells = Array(n * n).fill(EMPTY_CELL);
         var tableDiv = document.getElementById("table_div");
-        tableDiv.innerHTML = '';
+        tableDiv.innerHTML = EMPTY_CELL;
 
         var table = document.createElement('table');
         table.className = "table-striped no-bordered";
@@ -42,14 +42,14 @@ class Board {
 //MARK: Game class
 class Game {
 
-    /* var cells;
-    var turn;
-    var mode;
-    var gameFinished;
-    var move; */
+    // var cells;
+    // var turn;
+    // var mode;
+    // var gameFinished;
+    // var move;
 
     constructor(n) {
-        this.turn = JUGADOR_X;
+        this.turn = X;
         this.gameFinished = false;
         this.move = 0;
         this.writeInMainText("Iniciar partida");
@@ -59,9 +59,9 @@ class Game {
 
     getModeSelected() {
         var modes = document.getElementsByName('mode');
-        for (let i = 0; i < modes.length; i++) {
-            if (modes[i].checked) {
-                this.mode = modes[i].id;
+        for (let mode of modes) {
+            if (mode.checked) {
+                this.mode = mode.id;
                 break;
             }
         }
@@ -87,123 +87,17 @@ class Game {
         document.getElementById('title').innerHTML = text;
     }
 
-    computersTurn() {
-        var taken = false;
-        while (taken === false && this.move != 5) {
-            var id = this.chooseCell();
-            var cell = document.getElementById(id);
-            if (cell != null && !cell.hasChildNodes()) {
-                taken = true;
-                this.board.cells[id] = this.turn
-                this.writeCell(this.turn, cell);
-            }
-        }
-    }
-
-    chooseCell() {
-        if (this.mode == EASY_MODE) {
-            return (Math.random() * 9).toFixed();
-        } else {
-            var choice = this.tryToWin(JUGADOR_O);
-            if (choice != -1) {
-                return choice;
-            } else {
-                if (this.mode == MEDIUM_MODE) {
-                    choice = this.tryToWin(JUGADOR_X);
-                    if (choice != -1) {
-                        return choice;
-                    } else {
-                        return (Math.random() * 9).toFixed();
-                    }
-                } else {
-                    return this.studyMove();
-                }
-            }
-        }
-    }
-
     writeCell(value, cell) {
-        if (value == JUGADOR_X) {
+        if (value == X) {
             cell.appendChild(this.getXImage());
-            this.turn = JUGADOR_O;
+            this.turn = O;
         } else {
             cell.appendChild(this.getOImage());
-            this.turn = JUGADOR_X;
+            this.turn = X;
         }
         this.checkBoard(this.board.cells, value);
         if (this.gameFinished == false) {
             this.writeInMainText("Turno de " + this.turn);
-        }
-    }
-
-    tryToWin(value) {
-        //Primera fila
-        if (this.board.cells[0] == value && this.board.cells[1] == value && this.board.cells[2] == '') {
-            return 2;
-        } else if (this.board.cells[0] == value && this.board.cells[2] == value && this.board.cells[1] == '') {
-            return 1;
-        } else if (this.board.cells[1] == value && this.board.cells[2] == value && this.board.cells[0] == '') {
-            return 0;
-        }
-        //Segunda fila
-        else if (this.board.cells[3] == value && this.board.cells[4] == value && this.board.cells[5] == '') {
-            return 5;
-        } else if (this.board.cells[3] == value && this.board.cells[5] == value && this.board.cells[4] == '') {
-            return 4;
-        } else if (this.board.cells[4] == value && this.board.cells[5] == value && this.board.cells[3] == '') {
-            return 3;
-        }
-        //Tercera fila
-        else if (this.board.cells[6] == value && this.board.cells[7] == value && this.board.cells[8] == '') {
-            return 8;
-        } else if (this.board.cells[6] == value && this.board.cells[8] == value && this.board.cells[7] == '') {
-            return 7;
-        } else if (this.board.cells[7] == value && this.board.cells[8] == value && this.board.cells[6] == '') {
-            return 6;
-        }
-        //Primera columna
-        else if (this.board.cells[0] == value && this.board.cells[3] == value && this.board.cells[6] == '') {
-            return 6;
-        } else if (this.board.cells[0] == value && this.board.cells[6] == value && this.board.cells[3] == '') {
-            return 3;
-        } else if (this.board.cells[3] == value && this.board.cells[6] == value && this.board.cells[0] == '') {
-            return 0;
-        }
-        //Segunda columna
-        else if (this.board.cells[1] == value && this.board.cells[4] == value && this.board.cells[7] == '') {
-            return 7;
-        } else if (this.board.cells[1] == value && this.board.cells[7] == value && this.board.cells[4] == '') {
-            return 4;
-        } else if (this.board.cells[4] == value && this.board.cells[7] == value && this.board.cells[1] == '') {
-            return 1;
-        }
-        //Tercera columna
-        else if (this.board.cells[2] == value && this.board.cells[5] == value && this.board.cells[8] == '') {
-            return 8;
-        } else if (this.board.cells[2] == value && this.board.cells[8] == value && this.board.cells[5] == '') {
-            return 5;
-        } else if (this.board.cells[5] == value && this.board.cells[8] == value && this.board.cells[2] == '') {
-            return 2;
-        }
-        //Primera diagonal
-        else if (this.board.cells[0] == value && this.board.cells[4] == value && this.board.cells[8] == '') {
-            return 8;
-        } else if (this.board.cells[0] == value && this.board.cells[8] == value && this.board.cells[4] == '') {
-            return 4;
-        } else if (this.board.cells[4] == value && this.board.cells[8] == value && this.board.cells[0] == '') {
-            return 0;
-        }
-        //Segunda diagonal
-        else if (this.board.cells[2] == value && this.board.cells[4] == value && this.board.cells[6] == '') {
-            return 6;
-        } else if (this.board.cells[2] == value && this.board.cells[6] == value && this.board.cells[4] == '') {
-            return 4;
-        } else if (this.board.cells[4] == value && this.board.cells[6] == value && this.board.cells[2] == '') {
-            return 2;
-        }
-        //Otro
-        else {
-            return -1;
         }
     }
 
@@ -226,9 +120,9 @@ class Game {
             this.setCellClassName(2, 4, 6);
         } else if (!(cells.includes(EMPTY_CELL))) {
             this.writeInMainText("Empate");
-            var cells = document.querySelectorAll("td");
-            for (let i = 0; i < cells.length; i++) {
-                cells[i].className = "normalCell disable";
+            var tds = document.querySelectorAll("td");
+            for (let td of tds) {
+                td.className = "normalCell disable";
             }
             this.gameFinished = true;
         } else {
@@ -245,105 +139,200 @@ class Game {
 
     setCellClassName(x, y, z) {
         this.writeInMainText("Victoria de " + this.board.cells[x]);
-        var cells = document.querySelectorAll("td");
-        for (let i = 0; i < cells.length; i++) {
-            cells[i].className = "normalCell disable";
+        var tds = document.querySelectorAll("td");
+        for (let td of tds) {
+            td.className = "normalCell disable";
         }
         document.getElementById(x).className = "winCell";
         document.getElementById(y).className = "winCell";
         document.getElementById(z).className = "winCell";
     }
 
-    studyMove() {
-        //Si podemos, evitamos la victoria del jugador
-        var choice = this.tryToWin(JUGADOR_X);
-        if (choice != -1) {
-            return choice;
-        } else {
-            switch (this.move) {
-                //Primer turno
-                case 1:
-                    if (this.board.cells[0] == JUGADOR_X || this.board.cells[2] == JUGADOR_X || this.board.cells[6] == JUGADOR_X || this.board.cells[8] == JUGADOR_X) {
-                        return 4;
-                    } else if (this.board.cells[4] == JUGADOR_X) {
-                        return 0;
-                    } else if (this.board.cells[1] == JUGADOR_X) {
-                        return 2;
-                    } else if (this.board.cells[3] == JUGADOR_X) {
-                        return 6;
-                    } else {
-                        return 8;
-                    }
-                    //Segundo turno: solo debemos comprobar las opciones que no se hayan descartado anteriormente con la función tryToWin
-                    case 2:
-                        if (this.board.cells[0] == JUGADOR_X && this.board.cells[4] == JUGADOR_O) {
-                            if (this.board.cells[5] == JUGADOR_X) {
-                                return 1;
-                            } else {
-                                return 5;
-                            }
-                        } else if (this.board.cells[1] == JUGADOR_X && this.board.cells[2] == JUGADOR_O) {
-                            if (this.board.cells[0] == JUGADOR_X || this.board.cells[3] == JUGADOR_X) {
-                                return 8;
-                            } else if (this.board.cells[5] == JUGADOR_X) {
-                                return 4;
-                            } else {
-                                return 7;
-                            }
-                        } else if (this.board.cells[2] == JUGADOR_X && this.board.cells[4] == JUGADOR_O) {
-                            if (this.board.cells[3] == JUGADOR_X) {
-                                return 1;
-                            } else {
-                                return 3;
-                            }
-                        } else if (this.board.cells[3] == JUGADOR_X && this.board.cells[6] == JUGADOR_O) {
-                            if (this.board.cells[0] == JUGADOR_X || this.board.cells[1] == JUGADOR_X) {
-                                return 8;
-                            } else if (this.board.cells[8] == JUGADOR_X) {
-                                return 5;
-                            } else {
-                                return 4;
-                            }
-                        } else if (this.board.cells[4] == JUGADOR_X && this.board.cells[0] == JUGADOR_O) {
-                            return 6;
-                        } else if (this.board.cells[5] == JUGADOR_X && this.board.cells[8] == JUGADOR_O) {
-                            if (this.board.cells[0] == JUGADOR_X || this.board.cells[7] == JUGADOR_X) {
-                                return 4;
-                            } else if (this.board.cells[6] == JUGADOR_X) {
-                                return 3;
-                            } else {
-                                return 6;
-                            }
-                        } else if (this.board.cells[6] == JUGADOR_X && this.board.cells[4] == JUGADOR_O) {
-                            if (this.board.cells[5] == JUGADOR_X) {
-                                return 7;
-                            } else {
-                                return 3;
-                            }
-                        } else if (this.board.cells[7] == JUGADOR_X && this.board.cells[8] == JUGADOR_O) {
-                            if (this.board.cells[3] == JUGADOR_X || this.board.cells[6] == JUGADOR_X) {
-                                return 2;
-                            } else if (this.board.cells[2] == JUGADOR_X) {
-                                return 1;
-                            } else {
-                                return 4;
-                            }
-                        } else if (this.board.cells[8] == JUGADOR_X && this.board.cells[4] == JUGADOR_O) {
-                            if (this.board.cells[0] == JUGADOR_X) {
-                                return 5;
-                            } else if (this.board.cells[1] == JUGADOR_X) {
-                                return 0;
-                            } else {
-                                return 7;
-                            }
-                        } else {
-                            return (Math.random() * 9).toFixed();
-                        }
-                        default:
-                            return (Math.random() * 9).toFixed();
+    computersTurn() {
+        var taken = false;
+        while (taken === false && this.move != 5) {
+            var id = this.chooseCell();
+            var cell = document.getElementById(id);
+            if (cell != null && !cell.hasChildNodes()) {
+                taken = true;
+                this.board.cells[id] = this.turn;
+                this.writeCell(this.turn, cell);
             }
         }
+    }
 
+    chooseCell() {
+        if (this.mode == EASY_MODE) {
+            return (Math.random() * 9).toFixed();
+        } else {
+            var choice = this.tryToWin(O);
+            if (choice != -1) {
+                return choice;
+            } else {
+                choice = this.tryToWin(X);
+                if (choice != -1) {
+                    return choice;
+                } else {
+                    return this.mode == MEDIUM_MODE ? (Math.random() * 9).toFixed() : this.studyMove();
+                }
+            }
+        }
+    }
+
+    tryToWin(value) {
+        //Primera fila
+        if (this.board.cells[0] == value && this.board.cells[1] == value && this.board.cells[2] == EMPTY_CELL) {
+            return 2;
+        } else if (this.board.cells[0] == value && this.board.cells[2] == value && this.board.cells[1] == EMPTY_CELL) {
+            return 1;
+        } else if (this.board.cells[1] == value && this.board.cells[2] == value && this.board.cells[0] == EMPTY_CELL) {
+            return 0;
+        }
+        //Segunda fila
+        else if (this.board.cells[3] == value && this.board.cells[4] == value && this.board.cells[5] == EMPTY_CELL) {
+            return 5;
+        } else if (this.board.cells[3] == value && this.board.cells[5] == value && this.board.cells[4] == EMPTY_CELL) {
+            return 4;
+        } else if (this.board.cells[4] == value && this.board.cells[5] == value && this.board.cells[3] == EMPTY_CELL) {
+            return 3;
+        }
+        //Tercera fila
+        else if (this.board.cells[6] == value && this.board.cells[7] == value && this.board.cells[8] == EMPTY_CELL) {
+            return 8;
+        } else if (this.board.cells[6] == value && this.board.cells[8] == value && this.board.cells[7] == EMPTY_CELL) {
+            return 7;
+        } else if (this.board.cells[7] == value && this.board.cells[8] == value && this.board.cells[6] == EMPTY_CELL) {
+            return 6;
+        }
+        //Primera columna
+        else if (this.board.cells[0] == value && this.board.cells[3] == value && this.board.cells[6] == EMPTY_CELL) {
+            return 6;
+        } else if (this.board.cells[0] == value && this.board.cells[6] == value && this.board.cells[3] == EMPTY_CELL) {
+            return 3;
+        } else if (this.board.cells[3] == value && this.board.cells[6] == value && this.board.cells[0] == EMPTY_CELL) {
+            return 0;
+        }
+        //Segunda columna
+        else if (this.board.cells[1] == value && this.board.cells[4] == value && this.board.cells[7] == EMPTY_CELL) {
+            return 7;
+        } else if (this.board.cells[1] == value && this.board.cells[7] == value && this.board.cells[4] == EMPTY_CELL) {
+            return 4;
+        } else if (this.board.cells[4] == value && this.board.cells[7] == value && this.board.cells[1] == EMPTY_CELL) {
+            return 1;
+        }
+        //Tercera columna
+        else if (this.board.cells[2] == value && this.board.cells[5] == value && this.board.cells[8] == EMPTY_CELL) {
+            return 8;
+        } else if (this.board.cells[2] == value && this.board.cells[8] == value && this.board.cells[5] == EMPTY_CELL) {
+            return 5;
+        } else if (this.board.cells[5] == value && this.board.cells[8] == value && this.board.cells[2] == EMPTY_CELL) {
+            return 2;
+        }
+        //Primera diagonal
+        else if (this.board.cells[0] == value && this.board.cells[4] == value && this.board.cells[8] == EMPTY_CELL) {
+            return 8;
+        } else if (this.board.cells[0] == value && this.board.cells[8] == value && this.board.cells[4] == EMPTY_CELL) {
+            return 4;
+        } else if (this.board.cells[4] == value && this.board.cells[8] == value && this.board.cells[0] == EMPTY_CELL) {
+            return 0;
+        }
+        //Segunda diagonal
+        else if (this.board.cells[2] == value && this.board.cells[4] == value && this.board.cells[6] == EMPTY_CELL) {
+            return 6;
+        } else if (this.board.cells[2] == value && this.board.cells[6] == value && this.board.cells[4] == EMPTY_CELL) {
+            return 4;
+        } else if (this.board.cells[4] == value && this.board.cells[6] == value && this.board.cells[2] == EMPTY_CELL) {
+            return 2;
+        }
+        //Otro
+        else {
+            return -1;
+        }
+    }
+
+    studyMove() {
+        switch (this.move) {
+            //Primer turno
+            case 1:
+                if (this.board.cells[0] == X || this.board.cells[2] == X || this.board.cells[6] == X || this.board.cells[8] == X) {
+                    return 4;
+                } else if (this.board.cells[4] == X) {
+                    return 0;
+                } else if (this.board.cells[1] == X) {
+                    return 2;
+                } else if (this.board.cells[3] == X) {
+                    return 6;
+                } else {
+                    return 8;
+                }
+                //Segundo turno: solo debemos comprobar las opciones que no se hayan descartado anteriormente con la función tryToWin
+                case 2:
+                    if (this.board.cells[0] == X && this.board.cells[4] == O) {
+                        if (this.board.cells[5] == X) {
+                            return 1;
+                        } else {
+                            return 5;
+                        }
+                    } else if (this.board.cells[1] == X && this.board.cells[2] == O) {
+                        if (this.board.cells[0] == X || this.board.cells[3] == X) {
+                            return 8;
+                        } else if (this.board.cells[5] == X) {
+                            return 4;
+                        } else {
+                            return 7;
+                        }
+                    } else if (this.board.cells[2] == X && this.board.cells[4] == O) {
+                        if (this.board.cells[3] == X) {
+                            return 1;
+                        } else {
+                            return 3;
+                        }
+                    } else if (this.board.cells[3] == X && this.board.cells[6] == O) {
+                        if (this.board.cells[0] == X || this.board.cells[1] == X) {
+                            return 8;
+                        } else if (this.board.cells[8] == X) {
+                            return 5;
+                        } else {
+                            return 4;
+                        }
+                    } else if (this.board.cells[4] == X && this.board.cells[0] == O) {
+                        return 6;
+                    } else if (this.board.cells[5] == X && this.board.cells[8] == O) {
+                        if (this.board.cells[0] == X || this.board.cells[7] == X) {
+                            return 4;
+                        } else if (this.board.cells[6] == X) {
+                            return 3;
+                        } else {
+                            return 6;
+                        }
+                    } else if (this.board.cells[6] == X && this.board.cells[4] == O) {
+                        if (this.board.cells[5] == X) {
+                            return 7;
+                        } else {
+                            return 3;
+                        }
+                    } else if (this.board.cells[7] == X && this.board.cells[8] == O) {
+                        if (this.board.cells[3] == X || this.board.cells[6] == X) {
+                            return 2;
+                        } else if (this.board.cells[2] == X) {
+                            return 1;
+                        } else {
+                            return 4;
+                        }
+                    } else if (this.board.cells[8] == X && this.board.cells[4] == O) {
+                        if (this.board.cells[0] == X) {
+                            return 5;
+                        } else if (this.board.cells[1] == X) {
+                            return 0;
+                        } else {
+                            return 7;
+                        }
+                    } else {
+                        return (Math.random() * 9).toFixed();
+                    }
+                    default:
+                        return (Math.random() * 9).toFixed();
+        }
     }
 }
 
@@ -352,7 +341,7 @@ function playerTurn() {
     var cell = document.getElementById(id);
     if (game.gameFinished == false && !cell.hasChildNodes()) {
         game.move++;
-        game.board.cells[id] = game.turn
+        game.board.cells[id] = game.turn;
         game.writeCell(game.turn, cell);
         if (game.gameFinished == false && game.mode != MANUAL_MODE) {
             game.computersTurn();
