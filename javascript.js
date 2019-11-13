@@ -13,6 +13,7 @@ const MEDIUM_MODE = "automatic_medium";
 class Board {
 
     constructor(n) {
+        this.dimension = n;
         this.cells = Array(n * n).fill(EMPTY_CELL);
         var tableDiv = document.getElementById("table_div");
         tableDiv.innerHTML = EMPTY_CELL;
@@ -95,30 +96,14 @@ class Game {
             cell.appendChild(this.getOImage());
             this.turn = X;
         }
-        this.checkBoard(this.board.cells, value);
+        this.checkBoard(this.board.cells, value, cell.id);
         if (this.gameFinished == false) {
             this.writeInMainText("Turno de " + this.turn);
         }
     }
 
-    checkBoard(cells, currentTurn) {
-        if (this.checkCombination(cells, 0, 1, 2, currentTurn)) {
-            this.setCellClassName(0, 1, 2)
-        } else if (this.checkCombination(cells, 3, 4, 5, currentTurn)) {
-            this.setCellClassName(3, 4, 5);
-        } else if (this.checkCombination(cells, 6, 7, 8, currentTurn)) {
-            this.setCellClassName(6, 7, 8);
-        } else if (this.checkCombination(cells, 0, 3, 6, currentTurn)) {
-            this.setCellClassName(0, 3, 6);
-        } else if (this.checkCombination(cells, 1, 4, 7, currentTurn)) {
-            this.setCellClassName(1, 4, 7);
-        } else if (this.checkCombination(cells, 2, 5, 8, currentTurn)) {
-            this.setCellClassName(2, 5, 8);
-        } else if (this.checkCombination(cells, 0, 4, 8, currentTurn)) {
-            this.setCellClassName(0, 4, 8);
-        } else if (this.checkCombination(cells, 2, 4, 6, currentTurn)) {
-            this.setCellClassName(2, 4, 6);
-        } else if (!(cells.includes(EMPTY_CELL))) {
+    checkBoard(cells, currentTurn, position) {
+        if (!(cells.includes(EMPTY_CELL))) {
             this.writeInMainText("Empate");
             var tds = document.querySelectorAll("td");
             for (let td of tds) {
@@ -126,26 +111,50 @@ class Game {
             }
             this.gameFinished = true;
         } else {
-            this.gameFinished = false;
+            this.gameFinished = this.checkCells(cells, currentTurn, Math.floor(position/this.board.dimension),  Math.floor(position%this.board.dimension));
         }
     }
 
-    checkCombination(cells, x, y, z, value) {
-        if (cells[x] == value && cells[y] == value && cells[z] == value) {
-            this.gameFinished = true;
+    checkCells(cells, value, x, y) {
+        var n = this.board.dimension;
+        var col=0;
+        var row=0;
+        var diag=0;
+        var rdiag=0;
+
+        for (var i=0; i<n; i++) {
+            if (cells[(x*n)+i]===value) row++;
+            if (cells[(i*n)+y]===value) col++;
+            if (cells[(i*n)+i]===value) diag++;
+            if (cells[(i*n)+n-(i+1)]===value) rdiag++;
+        }
+
+        if (row === n) {
+            this.setVictoryCells(x*n,1);
             return true;
+        } else if (col === n) {
+            this.setVictoryCells(y,n);
+            return true;
+        } else if (diag === n) {
+            this.setVictoryCells(0,n+1);
+            return true;
+        } else if (rdiag === n) {
+            this.setVictoryCells(n-1,n-1);
+            return true;
+        } else {
+            return false;
         }
     }
 
-    setCellClassName(x, y, z) {
-        this.writeInMainText("Victoria de " + this.board.cells[x]);
+    setVictoryCells(init, sum) {
+        this.writeInMainText("Victoria de " + this.board.cells[init]);
         var tds = document.querySelectorAll("td");
         for (let td of tds) {
             td.className = "normalCell disable";
         }
-        document.getElementById(x).className = "winCell";
-        document.getElementById(y).className = "winCell";
-        document.getElementById(z).className = "winCell";
+        for (var i = 0; i < this.board.dimension; i++) {
+            document.getElementById(init+(i*sum)).className = "winCell";
+        }
     }
 
     computersTurn() {
