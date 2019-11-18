@@ -52,6 +52,10 @@ class Game {
         this.board = new Board(n);
     }
 
+    getRandomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
     getModeSelected() {
         var modes = document.getElementsByName('mode');
         for (let mode of modes) {
@@ -85,13 +89,13 @@ class Game {
     writeInMatrix(row, column, value) {
         this.board.matrix = this.board.matrix.map((r, i) => {
             if (row == i) {
-              return r.map((c, j) => {
-                return column == j ? value : c;
-              });
+                return r.map((c, j) => {
+                    return column == j ? value : c;
+                });
             } else {
-              return r;
+                return r;
             }
-          });
+        });
     }
 
     writeCell(value, cell) {
@@ -117,11 +121,11 @@ class Game {
             }
             this.gameFinished = true;
         } else {
-            this.gameFinished = this.checkCells(matrix, currentTurn, Math.floor(position / this.board.dimension), Math.floor(position % this.board.dimension));
+            this.gameFinished = this.checkMatrix(matrix, currentTurn, Math.floor(position / this.board.dimension), Math.floor(position % this.board.dimension));
         }
     }
 
-    checkCells(matrix, value, x, y) {
+    checkMatrix(matrix, value, x, y) {
         var n = this.board.dimension;
         var col = 0;
         var row = 0;
@@ -178,7 +182,7 @@ class Game {
 
     chooseCell() {
         if (this.mode == EASY_MODE) {
-            return (Math.random() * this.board.dimension * this.board.dimension).toFixed();
+            return this.getRandomNumber(0, (this.board.dimension * this.board.dimension) - 1);
         } else {
             var choice = this.tryToWin(O);
             if (choice != -1) {
@@ -188,7 +192,7 @@ class Game {
                 if (choice != -1) {
                     return choice;
                 } else {
-                    return this.mode == MEDIUM_MODE ? (Math.random() * this.board.dimension * this.board.dimension).toFixed() : this.studyMove();
+                    return this.mode == MEDIUM_MODE ? this.getRandomNumber(0, (this.board.dimension * this.board.dimension) - 1) : this.studyMove();
                 }
             }
         }
@@ -343,10 +347,10 @@ class Game {
                         return 7;
                     }
                 } else {
-                    return (Math.random() * this.board.dimension * this.board.dimension).toFixed();
+                    return this.getRandomNumber(0, (this.board.dimension * this.board.dimension) - 1);
                 }
             default:
-                return (Math.random() * this.board.dimension * this.board.dimension).toFixed();
+                return this.getRandomNumber(0, (this.board.dimension * this.board.dimension) - 1);
         }
     }
 }
