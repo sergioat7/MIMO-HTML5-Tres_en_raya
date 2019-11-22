@@ -56,6 +56,10 @@ class Game {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
+    isThereEmptyCell(matrix) {
+        return (matrix.map(row => { return row.includes(EMPTY_CELL) })).includes(true);
+    }
+
     getModeSelected() {
         var modes = document.getElementsByName('mode');
         for (let mode of modes) {
@@ -106,22 +110,9 @@ class Game {
             cell.appendChild(this.getOImage());
             this.turn = X;
         }
-        this.checkBoard(this.board.matrix, value, cell.id);
+        this.gameFinished = this.checkMatrix(this.board.matrix, value, Math.floor(cell.id / this.board.dimension), Math.floor(cell.id % this.board.dimension));
         if (this.gameFinished == false) {
             this.writeInMainText("Turno de " + this.turn);
-        }
-    }
-
-    checkBoard(matrix, currentTurn, position) {
-        if (!(matrix.map(row => { return row.includes(EMPTY_CELL) })).includes(true)) {
-            this.writeInMainText("Empate");
-            var tds = document.querySelectorAll("td");
-            for (let td of tds) {
-                td.className = "normalCell disable";
-            }
-            this.gameFinished = true;
-        } else {
-            this.gameFinished = this.checkMatrix(matrix, currentTurn, Math.floor(position / this.board.dimension), Math.floor(position % this.board.dimension));
         }
     }
 
@@ -151,6 +142,13 @@ class Game {
         } else if (rdiag === n) {
             this.setVictoryCells(n - 1, n - 1);
             return true;
+        } else if (!this.isThereEmptyCell(matrix)) {
+            this.writeInMainText("Empate");
+            var tds = document.querySelectorAll("td");
+            for (let td of tds) {
+                td.className = "normalCell disable";
+            }
+            return true;
         } else {
             return false;
         }
@@ -168,21 +166,17 @@ class Game {
     }
 
     computersTurn() {
-        var taken = false;
-        while (taken === false && this.move != 5) {
-            var id = this.chooseCell();
-            var cell = document.getElementById(id);
-            if (cell != null && !cell.hasChildNodes()) {
-                taken = true;
-                this.writeInMatrix(Math.floor(id / this.board.dimension), Math.floor(id % this.board.dimension), this.turn);
-                this.writeCell(this.turn, cell);
-            }
+        var id = this.chooseCell();
+        var cell = document.getElementById(id);
+        if (cell != null && !cell.hasChildNodes()) {
+            this.writeInMatrix(Math.floor(id / this.board.dimension), Math.floor(id % this.board.dimension), this.turn);
+            this.writeCell(this.turn, cell);
         }
     }
 
     chooseCell() {
         if (this.mode == EASY_MODE) {
-            return this.getRandomNumber(0, (this.board.dimension * this.board.dimension) - 1);
+            return this.getRandomEmptyCell();
         } else {
             var choice = this.tryToWin(O);
             if (choice != -1) {
@@ -192,10 +186,28 @@ class Game {
                 if (choice != -1) {
                     return choice;
                 } else {
-                    return this.mode == MEDIUM_MODE ? this.getRandomNumber(0, (this.board.dimension * this.board.dimension) - 1) : this.studyMove();
+                    return this.mode == MEDIUM_MODE ? this.getRandomEmptyCell() : this.studyMove();
                 }
             }
         }
+    }
+
+    getRandomEmptyCell() {
+        var emptyCells = this.board.matrix.map((row, i) => {
+            return row.map((element, j) => {
+                if (element === "") {
+                    return (i * this.board.dimension) + j;
+                }
+            });
+        }).map(row => {
+            return row.filter(Number.isFinite);
+        });
+        var emptyIds = emptyCells[0];
+        for (var i = 1; i < emptyCells.length; i++) {
+            emptyIds = emptyIds.concat(emptyCells[i]);
+        }
+        var number = this.getRandomNumber(0, emptyIds.length - 1);
+        return emptyIds[number];
     }
 
     tryToWin(value) {
