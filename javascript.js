@@ -359,10 +359,10 @@ class Game {
                         return 7;
                     }
                 } else {
-                    return this.getRandomNumber(0, (this.board.dimension * this.board.dimension) - 1);
+                    return this.getRandomEmptyCell();
                 }
             default:
-                return this.getRandomNumber(0, (this.board.dimension * this.board.dimension) - 1);
+                return this.getRandomEmptyCell();
         }
     }
 }
