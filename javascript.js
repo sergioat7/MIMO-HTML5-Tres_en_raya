@@ -262,7 +262,6 @@ class Game {
     constructor(n) {
         this.turn = X;
         this.gameFinished = false;
-        this.move = 0;
         this.writeInMainText("Iniciar partida");
         this.getModeSelected();
         this.board = new Board(n);
@@ -396,7 +395,6 @@ function playerTurn() {
     var id = this.id;
     var cell = document.getElementById(id);
     if (game.gameFinished == false && !cell.hasChildNodes()) {
-        game.move++;
         game.board.writeInMatrix(Math.floor(id / game.board.dimension), Math.floor(id % game.board.dimension), game.turn);
         game.writeCell(game.turn, cell);
         if (game.gameFinished == false && game.mode != MANUAL_MODE) {
