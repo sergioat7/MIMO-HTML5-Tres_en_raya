@@ -9,6 +9,8 @@ const MANUAL_MODE = "manual";
 const EASY_MODE = "automatic_easy";
 const MEDIUM_MODE = "automatic_medium";
 
+var boardDimension = 0;
+
 //MARK: Board class
 class Board {
 
@@ -17,24 +19,28 @@ class Board {
         this.matrix = Array(n).fill(Array(n).fill(EMPTY_CELL));
         this.minimaxOptions = new Map();
 
-        var tableDiv = document.getElementById("table_div");
-        tableDiv.innerHTML = EMPTY_CELL;
         var table = document.createElement('table');
         table.className = "table-striped no-bordered";
         table.id = 'board';
-        tableDiv.appendChild(table);
         var tbody = document.createElement('tbody');
         table.appendChild(tbody);
         for (var i = 0; i < n; i++) {
             var tr = document.createElement('tr');
+            tr.className = "tr" + n;
             for (var j = 0; j < n; j++) {
                 var td = document.createElement('td');
-                td.className = "normalCell";
+                td.className = "td" + n;
                 td.id = i * n + j;
                 td.addEventListener('click', playerTurn);
                 tr.appendChild(td);
             }
             tbody.appendChild(tr);
+        }
+
+        if (n > 0) {
+            var tableDiv = document.getElementById("table_div");
+            tableDiv.innerHTML = EMPTY_CELL;
+            tableDiv.appendChild(table);
         }
     }
 
@@ -135,125 +141,125 @@ class Board {
     minimax(board, maximizing, callback, depth) {
 
         var dimension = this.dimension;
-    
+
         if (depth == 0) this.minimaxOptions.clear();
         var Xvictory = this.checkBoard(board, X);
         var Ovictory = this.checkBoard(board, O);
         if (Xvictory) {
-          return -100 + depth;
+            return -100 + depth;
         } else if (Ovictory) {
-          return 100 - depth;
+            return 100 - depth;
         } else if (depth === dimension + 1) {
-          return 0;
+            return 0;
         }
-    
+
         if (maximizing) {
-          var best = -100;
-    
-          //Get available moves
-          var emptyIds = this.getEmptyCells(board);
-    
-          //Iterate over available moves
-          emptyIds.forEach(element => {
-    
-            var row = Math.floor(element / dimension);
-            var column = Math.floor(element % dimension);
-    
-            var child = board.map((r, i) => {
-              if (row == i) {
-                return r.map((c, j) => {
-                  return column == j ? O : c;
+            var best = -100;
+
+            //Get available moves
+            var emptyIds = this.getEmptyCells(board);
+
+            //Iterate over available moves
+            emptyIds.forEach(element => {
+
+                var row = Math.floor(element / dimension);
+                var column = Math.floor(element % dimension);
+
+                var child = board.map((r, i) => {
+                    if (row == i) {
+                        return r.map((c, j) => {
+                            return column == j ? O : c;
+                        });
+                    } else {
+                        return r;
+                    }
                 });
-              } else {
-                return r;
-              }
-            });
-    
-            var node_value = this.minimax(child, false, callback, depth + 1);
-            best = Math.max(best, node_value);
-    
-            if (depth === 0) {
-              var moves = this.minimaxOptions.has(node_value) ? this.minimaxOptions.get(node_value).toString() + "," + element.toString() : element
-              this.minimaxOptions.set(node_value, moves)
-            }
-    
-          });
-    
-          var result;
-          if (depth === 0) {
-    
-            if (this.minimaxOptions.has(-100)) {
-              best = -100;
-            } else if (this.minimaxOptions.has(100)) {
-              best = 100;
-            }
-    
-            var bestResult = this.minimaxOptions.get(best);
-            if (typeof bestResult == "string") {
-    
-              var bestArray = bestResult.split(",").map(id => parseInt(id));
-              if (bestArray.length === Math.pow(dimension, 2) - 1) {
-                if (bestArray.includes(0)) {
-                  result = 0;
-                } else if (bestArray.includes(dimension - 1)) {
-                  result = dimension - 1;
-                } else if (bestArray.includes((dimension - 1) * dimension)) {
-                  result = (dimension - 1) * dimension;
-                } else if (bestArray.includes(Math.pow(dimension, 2) - 1)) {
-                  result = Math.pow(dimension, 2) - 1;
-                } else {
-                  var random = this.getRandomNumber(0, bestArray.length - 1);
-                  result = bestArray[random];
+
+                var node_value = this.minimax(child, false, callback, depth + 1);
+                best = Math.max(best, node_value);
+
+                if (depth === 0) {
+                    var moves = this.minimaxOptions.has(node_value) ? this.minimaxOptions.get(node_value).toString() + "," + element.toString() : element
+                    this.minimaxOptions.set(node_value, moves)
                 }
-              } else {
-                var random = this.getRandomNumber(0, bestArray.length - 1);
-                result = bestArray[random];
-              }
-              
-            } else {
-              result = bestResult;
-            }
-    
-            callback(result);
-            return result;
-          }
-          return best;
-        }
-    
-        if (!maximizing) {
-          var best = 100;
-    
-          //Get available moves
-          var emptyIds = this.getEmptyCells(board);
-    
-          //Iterate over available moves
-          emptyIds.forEach(element => {
-    
-            var row = Math.floor(element / dimension);
-            var column = Math.floor(element % dimension);
-    
-            var child = board.map((r, i) => {
-              if (row == i) {
-                return r.map((c, j) => {
-                  return column == j ? X : c;
-                });
-              } else {
-                return r;
-              }
+
             });
-    
-            var node_value = this.minimax(child, true, callback, depth + 1);
-            best = Math.min(best, node_value);
-    
+
+            var result;
             if (depth === 0) {
-              var moves = this.minimaxOptions.has(node_value) ? this.minimaxOptions.get(node_value).toString() + "," + element.toString() : element
-              this.minimaxOptions.set(node_value, moves)
+
+                if (this.minimaxOptions.has(-100)) {
+                    best = -100;
+                } else if (this.minimaxOptions.has(100)) {
+                    best = 100;
+                }
+
+                var bestResult = this.minimaxOptions.get(best);
+                if (typeof bestResult == "string") {
+
+                    var bestArray = bestResult.split(",").map(id => parseInt(id));
+                    if (bestArray.length === Math.pow(dimension, 2) - 1) {
+                        if (bestArray.includes(0)) {
+                            result = 0;
+                        } else if (bestArray.includes(dimension - 1)) {
+                            result = dimension - 1;
+                        } else if (bestArray.includes((dimension - 1) * dimension)) {
+                            result = (dimension - 1) * dimension;
+                        } else if (bestArray.includes(Math.pow(dimension, 2) - 1)) {
+                            result = Math.pow(dimension, 2) - 1;
+                        } else {
+                            var random = this.getRandomNumber(0, bestArray.length - 1);
+                            result = bestArray[random];
+                        }
+                    } else {
+                        var random = this.getRandomNumber(0, bestArray.length - 1);
+                        result = bestArray[random];
+                    }
+
+                } else {
+                    result = bestResult;
+                }
+
+                callback(result);
+                return result;
             }
-    
-          });
-          return best;
+            return best;
         }
-      }
+
+        if (!maximizing) {
+            var best = 100;
+
+            //Get available moves
+            var emptyIds = this.getEmptyCells(board);
+
+            //Iterate over available moves
+            emptyIds.forEach(element => {
+
+                var row = Math.floor(element / dimension);
+                var column = Math.floor(element % dimension);
+
+                var child = board.map((r, i) => {
+                    if (row == i) {
+                        return r.map((c, j) => {
+                            return column == j ? X : c;
+                        });
+                    } else {
+                        return r;
+                    }
+                });
+
+                var node_value = this.minimax(child, true, callback, depth + 1);
+                best = Math.min(best, node_value);
+
+                if (depth === 0) {
+                    var moves = this.minimaxOptions.has(node_value) ? this.minimaxOptions.get(node_value).toString() + "," + element.toString() : element
+                    this.minimaxOptions.set(node_value, moves)
+                }
+
+            });
+            return best;
+        }
+    }
 }
 
 //MARK: Game class
@@ -304,14 +310,17 @@ class Game {
     }
 
     writeCell(value, cell) {
+        var n = this.board.dimension;
         if (value == X) {
             cell.appendChild(this.getXImage());
+            cell.className = "td" + n + " disable";
             this.turn = O;
         } else {
             cell.appendChild(this.getOImage());
+            cell.className = "td" + n + " disable";
             this.turn = X;
         }
-        this.gameFinished = this.checkMatrix(this.board.matrix, value, Math.floor(cell.id / this.board.dimension), Math.floor(cell.id % this.board.dimension));
+        this.gameFinished = this.checkMatrix(this.board.matrix, value, Math.floor(cell.id / n), Math.floor(cell.id % n));
         if (this.gameFinished == false) {
             this.writeInMainText("Turno de " + this.turn);
         }
@@ -347,7 +356,7 @@ class Game {
             this.writeInMainText("Empate");
             var tds = document.querySelectorAll("td");
             for (let td of tds) {
-                td.className = "normalCell disable";
+                td.className = "td" + n + " disable";
             }
             return true;
         } else {
@@ -356,13 +365,14 @@ class Game {
     }
 
     setVictoryCells(init, sum) {
-        this.writeInMainText("Victoria de " + this.board.matrix[Math.floor(init / this.board.dimension)][Math.floor(init % this.board.dimension)]);
+        var n = this.board.dimension;
+        this.writeInMainText("Victoria de " + this.board.matrix[Math.floor(init / n)][Math.floor(init % n)]);
         var tds = document.querySelectorAll("td");
         for (let td of tds) {
-            td.className = "normalCell disable";
+            td.className = "td" + n + " disable";
         }
-        for (var i = 0; i < this.board.dimension; i++) {
-            document.getElementById(init + (i * sum)).className = "winCell";
+        for (var i = 0; i < n; i++) {
+            document.getElementById(init + (i * sum)).className = "winTd" + n + " disable";
         }
     }
 
@@ -404,8 +414,15 @@ function playerTurn() {
 }
 
 function resetBoard() {
-    game = new Game(3);
+    game = new Game(boardDimension);
 }
 
-//MARK: Ejecución
-var game = new Game(3);
+function setDimensionTo3() {
+    boardDimension = 3;
+    this.resetBoard();
+}
+
+function setDimensionTo4() {
+    boardDimension = 4;
+    this.resetBoard();
+}
